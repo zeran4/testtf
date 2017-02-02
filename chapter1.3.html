@@ -1,0 +1,34 @@
+<script type="text/javascript">
+
+var forwardMultiplyGate = function(x, y) {
+  return x * y;
+};
+forwardMultiplyGate(-2, 3); // -6 이 리턴됩니다.
+
+
+// 하나의 게이트가 있는 회로
+var forwardMultiplyGate = function(x, y) { return x * y; };
+var x = -2, y = 3; // 입력 값
+
+var out = forwardMultiplyGate(x, y); // -6
+var h = 0.0001;
+
+// x 에 대한 변화율을 계산
+var xph = x + h; // -1.9999
+var out2 = forwardMultiplyGate(xph, y); // -5.9997
+var x_derivative = (out2 - out) / h; // 3.0
+
+// y 에 대한 변화율을 계산
+var yph = y + h; // 3.0001
+var out3 = forwardMultiplyGate(x, yph); // -6.0002
+var y_derivative = (out3 - out) / h; // -2.0
+
+var step_size = 0.01;
+var out = forwardMultiplyGate(x, y); // 변경전: -6
+x = x + step_size * x_derivative; // x 는 -1.97 로 변경
+y = y + step_size * y_derivative; // y 는 2.98 로 변경
+var out_new = forwardMultiplyGate(x, y); // -5.87! 만세.
+
+alert("out_new  : " + out_new );
+
+</script>

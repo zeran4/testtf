@@ -1,0 +1,20 @@
+<script type="text/javascript">
+
+var forwardMultiplyGate = function(a, b) { 
+  return a * b;
+};
+var forwardAddGate = function(a, b) { 
+  return a + b;
+};
+var forwardCircuit = function(x,y,z) { 
+  var q = forwardAddGate(x, y);
+  var f = forwardMultiplyGate(q, z);
+  return f;
+};
+
+var x = -2, y = 5, z = -4;
+var f = forwardCircuit(x, y, z); // -12 가 출력됩니다
+
+alert("f : " + f);
+
+</script>

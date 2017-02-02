@@ -1,0 +1,133 @@
+<script type="text/javascript">
+
+// Unit은 회로 그림의 선에 대응합니다
+var Unit = function(value, grad) {
+  // 정방향에서 계산되는 값
+  this.value = value; 
+  // 역방향일 때 계산되는 이 유닛에 대한 회로 출력의 변화율
+  this.grad = grad; 
+}
+
+var multiplyGate = function(){ };
+multiplyGate.prototype = {
+  forward: function(u0, u1) {
+    // 입력 유닛 u0, u1 과 출력 유닛 utop 의 포인터를 저장합니다.
+    this.u0 = u0; 
+    this.u1 = u1; 
+    this.utop = new Unit(u0.value * u1.value, 0.0);
+    return this.utop;
+  },
+  backward: function() {
+    // 출력 유닛의 기울기를 받아 곱셉 게이트의 자체 기울기와 곱하여(체인 룰)
+    // 입력 유닛의 기울기로 저장합니다.
+    this.u0.grad += this.u1.value * this.utop.grad;
+    this.u1.grad += this.u0.value * this.utop.grad;
+  }
+}
+
+var addGate = function(){ };
+addGate.prototype = {
+  forward: function(u0, u1) {
+    this.u0 = u0; 
+    this.u1 = u1; // 입력 유닛의 포인터를 저장합니다
+    this.utop = new Unit(u0.value + u1.value, 0.0);
+    return this.utop;
+  },
+  backward: function() {
+    // 입력에 대한 덧셈 게이트의 기울기는 1 입니다
+    this.u0.grad += 1 * this.utop.grad;
+    this.u1.grad += 1 * this.utop.grad;
+  }
+}
+
+var sigmoidGate = function() { 
+  // 헬퍼 함수
+  this.sig = function(x) { return 1 / (1 + Math.exp(-x)); };
+};
+sigmoidGate.prototype = {
+  forward: function(u0) {
+    this.u0 = u0;
+    this.utop = new Unit(this.sig(this.u0.value), 0.0);
+    return this.utop;
+  },
+  backward: function() {
+    var s = this.sig(this.u0.value);
+    this.u0.grad += (s * (1 - s)) * this.utop.grad;
+  }
+}
+
+// 입력 유닛 생성
+var a = new Unit(1.0, 0.0);
+var b = new Unit(2.0, 0.0);
+var c = new Unit(-3.0, 0.0);
+var x = new Unit(-1.0, 0.0);
+var y = new Unit(3.0, 0.0);
+
+// 게이트 생성
+var mulg0 = new multiplyGate();
+var mulg1 = new multiplyGate();
+var addg0 = new addGate();
+var addg1 = new addGate();
+var sg0 = new sigmoidGate();
+
+// 정방향 계산
+var forwardNeuron = function() {
+  ax = mulg0.forward(a, x); // a*x = -1
+  by = mulg1.forward(b, y); // b*y = 6
+  axpby = addg0.forward(ax, by); // a*x + b*y = 5
+  axpbypc = addg1.forward(axpby, c); // a*x + b*y + c = 2
+  s = sg0.forward(axpbypc); // sig(a*x + b*y + c) = 0.8808
+};
+forwardNeuron();
+
+
+
+alert("회로 출력: " + s.value); // 0.8808 출력
+
+
+s.grad = 1.0;
+sg0.backward(); // axpbypc 에 기울기 저장
+addg1.backward(); // axpby 와 c 에 기울기 저장
+addg0.backward(); // ax 와 by 에 기울기 저장
+mulg1.backward(); // b 와 y 에 기울기 저장
+mulg0.backward(); // a 와 x 에 기울기 저장
+
+var step_size = 0.01;
+a.value += step_size * a.grad; // a.grad 는 -0.105
+//alert('a.grad : ' + a.grad);
+//alert('a.value : ' + a.value);
+b.value += step_size * b.grad; // b.grad 는 0.315
+c.value += step_size * c.grad; // c.grad 는 0.105
+x.value += step_size * x.grad; // x.grad 는 0.105
+y.value += step_size * y.grad; // y.grad 는 0.210
+
+forwardNeuron();
+
+alert('역전파 적용한 후 회로의 출력: ' + s.value); // 0.8825 출력
+
+
+</script>
+
+<script type="text/javascript">
+
+var forwardCircuitFast = function(a,b,c,x,y) { 
+  return 1/(1 + Math.exp( - (a*x + b*y + c))); 
+};
+
+
+fuction showCalGradient() {
+var a = 1, b = 2, c = -3, x = -1, y = 3;
+var h = 0.0001;
+var a_grad = (forwardCircuitFast(a+h,b,c,x,y) - forwardCircuitFast(a,b,c,x,y))/h;
+var b_grad = (forwardCircuitFast(a,b+h,c,x,y) - forwardCircuitFast(a,b,c,x,y))/h;
+var c_grad = (forwardCircuitFast(a,b,c+h,x,y) - forwardCircuitFast(a,b,c,x,y))/h;
+var x_grad = (forwardCircuitFast(a,b,c,x+h,y) - forwardCircuitFast(a,b,c,x,y))/h;
+var y_grad = (forwardCircuitFast(a,b,c,x,y+h) - forwardCircuitFast(a,b,c,x,y))/h;
+
+	alert("a, b, c, x, y : " + a_grad + ", " + b_grad + ", " + c_grad + ", " + x_grad + y_grad); // 0.8825 출력
+
+}
+
+showCalGradient();
+
+</script>

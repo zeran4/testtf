@@ -1,0 +1,20 @@
+<script type="text/javascript">
+
+var forwardMultiplyGate = function(x, y) {
+  return x * y;
+};
+
+
+var x = -2, y = 3;
+var out = forwardMultiplyGate(x, y); // 변경전: -6
+var x_gradient = y; // 수학 공식에 의해
+var y_gradient = x;
+
+var step_size = 0.01;
+x += step_size * x_gradient; // -2.03
+y += step_size * y_gradient; // 2.98
+var out_new = forwardMultiplyGate(x, y); // -5.87. 출력 값 증가! 나이스.
+
+alert("out_new : " + out_new);
+
+</script>

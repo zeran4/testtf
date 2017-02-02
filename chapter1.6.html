@@ -1,0 +1,51 @@
+<script type="text/javascript">
+
+var forwardMultiplyGate = function(a, b) { 
+  return a * b;
+};
+var forwardAddGate = function(a, b) { 
+  return a + b;
+};
+var forwardCircuit = function(x,y,z) { 
+  var q = forwardAddGate(x, y);
+  var f = forwardMultiplyGate(q, z);
+  return f;
+};
+
+// 초기 조건
+var x = -2, y = 5, z = -4;
+var q = forwardAddGate(x, y); // q 는 3
+var f = forwardMultiplyGate(q, z); // 출력은 -12
+
+// 입력에 대한 곱셈 게이트의 기울기.
+// wrt는 '에 대해서'의 줄임말 입니다.
+var derivative_f_wrt_z = q; // 3
+var derivative_f_wrt_q = z; // -4
+
+// 입력에 대한 덧셈 게이트의 기울기
+var derivative_q_wrt_x = 1.0;
+var derivative_q_wrt_y = 1.0;
+
+// 체인 룰
+var derivative_f_wrt_x = derivative_q_wrt_x * derivative_f_wrt_q; // -4
+var derivative_f_wrt_y = derivative_q_wrt_y * derivative_f_wrt_q; // -4
+
+
+// 위에서 구해진 최종 기울기: [-4, -4, 3]
+var gradient_f_wrt_xyz = [derivative_f_wrt_x, derivative_f_wrt_y, derivative_f_wrt_z]
+
+// 포스에 맞춰 입력을 조정합니다.
+var step_size = 0.01;
+x = x + step_size * derivative_f_wrt_x; // -2.04
+y = y + step_size * derivative_f_wrt_y; // 4.96
+z = z + step_size * derivative_f_wrt_z; // -3.97
+
+// 회로가 더 높은 값을 출력합니다.
+var q = forwardAddGate(x, y); // q 는 2.92
+var f = forwardMultiplyGate(q, z); // 출력은 -11.59 로 -12 보다 높습니다! 좋아요!
+
+
+
+alert("f : " + f);
+
+</script>

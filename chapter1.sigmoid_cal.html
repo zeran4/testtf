@@ -1,0 +1,21 @@
+<script type="text/javascript">
+
+var forwardCircuitFast = function(a,b,c,x,y) { 
+  return 1/(1 + Math.exp( - (a*x + b*y + c))); 
+};
+
+
+
+var a = 1, b = 2, c = -3, x = -1, y = 3;
+var h = 0.0001;
+var a_grad = (forwardCircuitFast(a+h,b,c,x,y) - forwardCircuitFast(a,b,c,x,y))/h;
+var b_grad = (forwardCircuitFast(a,b+h,c,x,y) - forwardCircuitFast(a,b,c,x,y))/h;
+var c_grad = (forwardCircuitFast(a,b,c+h,x,y) - forwardCircuitFast(a,b,c,x,y))/h;
+var x_grad = (forwardCircuitFast(a,b,c,x+h,y) - forwardCircuitFast(a,b,c,x,y))/h;
+var y_grad = (forwardCircuitFast(a,b,c,x,y+h) - forwardCircuitFast(a,b,c,x,y))/h;
+
+	alert("a, b, c, x, y : " + a_grad + ", " + b_grad + ", " + c_grad + ", " + x_grad + ", " +  y_grad);
+
+
+
+</script>

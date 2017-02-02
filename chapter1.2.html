@@ -1,0 +1,25 @@
+<script type="text/javascript">
+
+var forwardMultiplyGate = function(x, y) {
+  return x * y;
+};
+forwardMultiplyGate(-2, 3); // -6 이 리턴됩니다.
+
+
+var x = -2, y = 3;
+var out = forwardMultiplyGate(x, y); // -6
+var h = 0.0001;
+
+// x 에 대한 변화율을 계산
+var xph = x + h; // -1.9999
+var out2 = forwardMultiplyGate(xph, y); // -5.9997
+var x_derivative = (out2 - out) / h; // 3.0
+
+// y 에 대한 변화율을 계산
+var yph = y + h; // 3.0001
+var out3 = forwardMultiplyGate(x, yph); // -6.0002
+var y_derivative = (out3 - out) / h; // -2.0
+
+alert("out3 : " + out3);
+
+</script>
